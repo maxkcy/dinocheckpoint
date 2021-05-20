@@ -23,8 +23,8 @@ ServerMain serverMain;
 
     public void handleFrame(ServerWebSocket webSocket, final WebSocketFrame frame){
         request = serverMain.manualSerializer.deserialize(frame.binaryData().getBytes());
-        System.out.println("Received packet: " + request + " from: RA " + webSocket.remoteAddress());
-
+        //System.out.println("Received packet: " + request + " from: RA " + webSocket.remoteAddress());
+        Gdx.app.log(this.toString(), "Received packet: " + request + " from: Remote Address " + webSocket.remoteAddress());
 
 
         if (request instanceof RoomPacket){

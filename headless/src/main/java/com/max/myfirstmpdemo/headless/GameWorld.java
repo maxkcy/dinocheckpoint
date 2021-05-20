@@ -276,17 +276,30 @@ public class GameWorld {
 
 
             } else if(((PlayerEntity) playerItem.userData).state == PlayerEntity.States.Kicking && ((PlayerEntity)playerItem.userData).kickingStateSent == false){
-                bluePlayerStatePacket.setState(BluePlayerStatePacket.States.kicking);
-                bluePlayerStatePacket.setPosition(world.getRect(playerItem).x, world.getRect(playerItem).y);
-                for (ServerWebSocket player : playersList) {
-                    player.writeFinalBinaryFrame(
-                            Buffer.buffer(ServerMain.manualSerializer.serialize(bluePlayerStatePacket)));
-                    Gdx.app.log(this.toString(),"bluePlayerStatePacket kicking (" + bluePlayerStatePacket.getState() +
-                            ") sent to:" + player);
+
+                if (((((BallEntity) ballItem.userData).position.y - ((PlayerEntity) playerItem.userData).position.y) <=  8 + playerItem.userData.height && (((BallEntity) ballItem.userData).position.y - ((PlayerEntity) playerItem.userData).position.y) >= -(ballItem.userData.height + 8)
+                        && ((((BallEntity) ballItem.userData).position.x - ((PlayerEntity) playerItem.userData).position.x) <= 8 + playerItem.userData.width && (((BallEntity) ballItem.userData).position.x - ((PlayerEntity) playerItem.userData).position.x) >= -(ballItem.userData.width + 8)))) {
+
+                    ((PlayerEntity) playerItem.userData).isKicking = true;
+                    ((PlayerEntity) playerItem.userData).kickingTimer = 0;
+
+                    bluePlayerStatePacket.setState(BluePlayerStatePacket.States.kicking);
+                    bluePlayerStatePacket.setPosition(world.getRect(playerItem).x, world.getRect(playerItem).y);
+                    for (ServerWebSocket player : playersList) {
+                        player.writeFinalBinaryFrame(
+                                Buffer.buffer(ServerMain.manualSerializer.serialize(bluePlayerStatePacket)));
+                        Gdx.app.log(this.toString(),"bluePlayerStatePacket kicking (" + bluePlayerStatePacket.getState() +
+                                ") sent to:" + player);
+
+                        ((PlayerEntity)playerItem.userData).kickingStateSent = true;
+                        ((PlayerEntity)playerItem.userData).idleStateSent = false;
+                        ((PlayerEntity)playerItem.userData).runningStateSent = false;
+                    }
+                }else {
+                    ((PlayerEntity)playerItem.userData).kickingStateSent = false;
+                    ((PlayerEntity) playerItem.userData).state = PlayerEntity.States.Idle;
                 }
-                ((PlayerEntity)playerItem.userData).kickingStateSent = true;
-                ((PlayerEntity)playerItem.userData).idleStateSent = false;
-                ((PlayerEntity)playerItem.userData).runningStateSent = false;
+
 
             }
         }
@@ -295,24 +308,14 @@ public class GameWorld {
     public void checkBlueKicking(float delta){
         for (Item<Entity> playerItem : playerItemListTeamBlue) {
 
-            if ((((PlayerEntity) playerItem.userData).state == PlayerEntity.States.Kicking && ((PlayerEntity) playerItem.userData).kickingStateSent == true && ((PlayerEntity) playerItem.userData).isKicking) == false) {
+            if ((((PlayerEntity) playerItem.userData).state == PlayerEntity.States.Kicking && ((PlayerEntity) playerItem.userData).kickingStateSent == true)
+                    && ((PlayerEntity) playerItem.userData).isKicking == true) {
                 angleBlue = MathUtils.atan2(((BallEntity) ballItem.userData).position.y - ((PlayerEntity) playerItem.userData).position.y,
                         ((BallEntity) ballItem.userData).position.x - ((PlayerEntity) playerItem.userData).position.x) * MathUtils.radiansToDegrees;
 
                 angleBlue = (((angleBlue % 360) + 360) % 360);
 
-                if (((((BallEntity) ballItem.userData).position.y - ((PlayerEntity) playerItem.userData).position.y) <= 40 && (((BallEntity) ballItem.userData).position.y - ((PlayerEntity) playerItem.userData).position.y) >= -40)
-                        && ((((BallEntity) ballItem.userData).position.x - ((PlayerEntity) playerItem.userData).position.x) <= 40 && (((BallEntity) ballItem.userData).position.x - ((PlayerEntity) playerItem.userData).position.x) >= -40)) {
-                    ((PlayerEntity) playerItem.userData).isKicking = true;
-                    ((PlayerEntity) playerItem.userData).kickingTimer = 0;
-                }else {
-                    ((PlayerEntity) playerItem.userData).isKicking = false;
-                    ((PlayerEntity) playerItem.userData).state = PlayerEntity.States.Idle;
-                    ((PlayerEntity) playerItem.userData).kickingStateSent = false;
-                    ((PlayerEntity) playerItem.userData).kickingTimer = 0;
-                }
-            }
-            if (((PlayerEntity) playerItem.userData).isKicking == true) {
+
                 world.move(ballItem, ((BallEntity) ballItem.userData).position.x + ((MathUtils.cosDeg(angleBlue) * 10f * (2 - ((PlayerEntity) playerItem.userData).kickingTimer))),
                         ((BallEntity) ballItem.userData).position.y + ((MathUtils.sinDeg(angleBlue) * 10f * (2 - ((PlayerEntity) playerItem.userData).kickingTimer))),
                         ((BallEntity) ballItem.userData).collisionFilter);
@@ -338,7 +341,10 @@ public class GameWorld {
                     * MathUtils.radiansToDegrees;
             angle = (((angle % 360) + 360) % 360);
 
-            if(world.getRect(ballItem).x - ballItem.userData.position.x <= 7 && world.getRect(ballItem).y - ballItem.userData.position.y <= 7 ) {
+            if(world.getRect(ballItem).x - ballItem.userData.position.x <= 7
+                    && world.getRect(ballItem).y - ballItem.userData.position.y <= 7
+                    && world.getRect(ballItem).x - ballItem.userData.position.x >= -7
+                    && world.getRect(ballItem).y - ballItem.userData.position.y >= -7) {
                 ballItem.userData.position.x = world.getRect(ballItem).x;
                 ballItem.userData.position.y = world.getRect(ballItem).y;
 

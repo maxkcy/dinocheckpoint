@@ -92,6 +92,8 @@ public Hud hud;
             click = true;
         }
         if(!Gdx.input.isTouched() && click == true){
+            touchUpPacket.setX(touch.x);
+            touchUpPacket.setY(touch.y);
             game.clientWS.webSocket.send(touchUpPacket);
             click = false;
             Gdx.app.log(this.toString(), "TouchUpPacket sent");

@@ -9,11 +9,33 @@ import io.vertx.core.http.ServerWebSocket;
 
 public class TouchUpPacket implements Transferable<TouchUpPacket> {
 
+    float x;
+    float y;
 
     public TouchUpPacket() {
     }
 
     ServerWebSocket serverWebSocket; //unitialized. this comment to show how pointers work.
+
+    public TouchUpPacket(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+    public float getX() {
+        return x;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
 
     public void setServerWebSocket(ServerWebSocket serverWebSocket) {
         this.serverWebSocket = serverWebSocket;
