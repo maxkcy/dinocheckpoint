@@ -32,6 +32,8 @@ public class BluePlayer {
 
         keyframe = new Sprite(game.splashScreen.gameAssets.textureAtlas.createSprites().get(0));
         keyframe.setFlip(true, false);
+        keyframe.setRegionWidth(26);
+        keyframe.setRegionHeight(26);
 
         blueIdleAnimation = new Animation<TextureRegion>(1/10f, game.splashScreen.gameAssets.textureAtlas.findRegions("BlueIdle"));
         blueRunningAnimation = new Animation<TextureRegion>(1/10f, game.splashScreen.gameAssets.textureAtlas.findRegions("BlueRun"));
@@ -67,12 +69,11 @@ public class BluePlayer {
         if(previousAnimation != animation){Gdx.app.log(this.toString(), String.valueOf(animation));}
         if(animation != null){
             keyframe.setRegion(animation.getKeyFrame(statetime));
-            keyframe.setPosition(position.x, position.y);
+            keyframe.setPosition(position.x - 1, position.y - 1);
         }else {Gdx.app.log(this.toString(), "animation is null");}
         this.statetime += delta;
 
-        keyframe.setRegionWidth(24);
-        keyframe.setRegionHeight(24);
+
 
         if(previousPosition != position){
             if (previousPosition.x - position.x > 0){
