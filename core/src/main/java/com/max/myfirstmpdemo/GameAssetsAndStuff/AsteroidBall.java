@@ -24,10 +24,11 @@ public class AsteroidBall {
     public AsteroidBall(MyFirstMpDemoMain game) {
         this.game = game;
         //asteroidAnimation = new Animation<TextureRegion>(1/5f, game.splashScreen.gameAssets.asteroidTextureAtlas.findRegions("asteroid"));
-        asteroidAnimation = new Animation<TextureRegion>(1/10f, game.splashScreen.gameAssets.asteroidNewAtlas.findRegions("a10"));
+        asteroidAnimation = new Animation<TextureRegion>(1/25f, game.splashScreen.gameAssets.asteroidNewAtlas.findRegions("a10"));
         asteroidAnimation.setPlayMode(Animation.PlayMode.LOOP);
         keyframe = new Sprite(game.splashScreen.gameAssets.asteroidTextureAtlas.createSprites().get(0));
         keyframe.setSize(42, 42);
+        keyframe.setFlip(true, false);
         unInitSpriteTest = keyframe;
     }
 
@@ -35,6 +36,7 @@ public class AsteroidBall {
 
     float angle = 0;
     boolean isMoving = false;
+    boolean flipflip = false;
 
     public void update(float delta){
         // -->this to be done later along with rotation asteroidAnimation.setFrameDuration();
@@ -50,8 +52,11 @@ public class AsteroidBall {
          angle = (((360 % angle) + 360) % 360);
          keyframe.setRotation(angle);
          isMoving = true;
+         if (position.x  < previousPosition.x){
+             flipflip = true;
+         } else {flipflip = false;}
         }else {isMoving = false;}
-
+        keyframe.setFlip(flipflip, false);
         keyframe.draw(game.getBatch());
 
         previousPosition.x = position.x;

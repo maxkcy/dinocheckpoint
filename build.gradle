@@ -37,3 +37,5 @@ subprojects {
 }
 
 eclipse.project.name = 'MyFirstMpDemo' + '-parent'
+
+//gradle.properties is where gamesvcs go
